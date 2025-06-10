@@ -41,11 +41,15 @@ def asignar_rootwin(w: Tk):
 
 # crud
 def c_api(dispositivo_body):
-    code = requests.post(url=API_URL, json=dispositivo_body)
-    return code
+    response = requests.post(url=API_URL, json=dispositivo_body)
+    return response
 
 def r_api():
-    return 
+    response = requests.get(url=API_URL)
+    if response.status_code == 200:
+        return response.json()  # lista de dispositivos
+    else:
+        return []
 
 def u_api():
     return 
@@ -185,6 +189,11 @@ nuevobtn.pack(side='left')
 editarbtn.pack(side='left')
 eliminarbtn.pack(side='left')
 backupbtn.pack(side='left')
+
+print(API_URL)
+#dispositivos = r_api()
+#for dispositivo in dispositivos:
+    #ttk.Button(dispositivos_frame, text=f"{dispositivo['nombre']} - {dispositivo['ip']} - {dispositivo['tipo']}").pack()
 
 root.mainloop()
 

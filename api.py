@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import db.models as crud
+#from programa import Dispositivo
 
 
 app = FastAPI()
@@ -17,7 +18,10 @@ def leer_dispositivo(dispositivo_id: int, db: Session = Depends(crud.get_db)):
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")
     return dispositivo
 
-# Y así para actualizar, borrar, listar, etc.
+@app.get("/dispositivos/")
+def leer_todos_dispositivos(db: Session = Depends(crud.get_db)):
+    return db.query(crud.Dispositivo).all()
+ #Y así para actualizar, borrar, listar, etc.
 
 # Para correr el server:
 # uvicorn main:app --reload

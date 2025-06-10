@@ -63,7 +63,7 @@ def nuevo_dispositivo():
     usuario_var = StringVar()
     contrasena_var = StringVar()
     puerto_var = IntVar()
-    b_periodo_var = IntVar() # 1->(Diario) 2->(Semanal) 3->(Mensual)
+    b_periodo_var = StringVar()
     b_hora_var = StringVar()
     b_dia_var = StringVar()
     b_mes_var = IntVar()
@@ -73,7 +73,7 @@ def nuevo_dispositivo():
     details_frame = ttk.LabelFrame(w, text="Detalles del dispositivo")
     main_frame.pack()
     details_frame.pack()
-    
+
     # ------- datos principales -------
     ttk.Label(main_frame, text="Nombre").grid(row=0, column=0, padx=5)
     ttk.Entry(main_frame, textvariable=nombre_var).grid(row=0, column=1, padx=5)
@@ -101,7 +101,18 @@ def nuevo_dispositivo():
     ttk.Entry(details_frame, textvariable=b_path_var).grid(row=8, column=1, pady=2, sticky="ew")
 
     def enviar_y_cerrar():
-        dispositivo = Dispositivo(nombre_var.get(), ip_var.get(), tipo_var.get(), usuario_var.get(), contrasena_var.get(), puerto_var.get(), b_periodo_var.get(), b_hora_var.get(), b_dia_var.get(), b_mes_var.get(), b_path_var.get())
+        print(b_periodo_var.get())
+        match (b_periodo_var.get()):
+            case "Diario":
+                b_periodo_int = 1
+            case "Semanal":
+                b_periodo_int = 2
+            case "Mensual":
+                b_periodo_int = 3
+            case _:
+                exit("No deberia pasar esto nunca")
+
+        dispositivo = Dispositivo(nombre_var.get(), ip_var.get(), tipo_var.get(), usuario_var.get(), contrasena_var.get(), puerto_var.get(), b_periodo_int, b_hora_var.get(), b_dia_var.get(), b_mes_var.get(), b_path_var.get())
         try:
             response = c_api(dispositivo.to_dict())
             if response.status_code == 200 or response.status_code == 201:

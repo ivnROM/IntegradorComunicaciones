@@ -15,7 +15,7 @@ class Dispositivo(Base):
     ip = Column(String, nullable=False)
     tipo = Column(String, nullable=False)
     usuario = Column(String, nullable=False)
-    contraseña = Column(String, nullable=False)
+    contrasena = Column(String, nullable=False)
     puerto = Column(Integer, nullable=False)
 
     # Backup settings

@@ -191,9 +191,13 @@ eliminarbtn.pack(side='left')
 backupbtn.pack(side='left')
 
 print(API_URL)
-#dispositivos = r_api()
-#for dispositivo in dispositivos:
-    #ttk.Button(dispositivos_frame, text=f"{dispositivo['nombre']} - {dispositivo['ip']} - {dispositivo['tipo']}").pack()
+dispositivos = r_api()
+for i, dispositivo in enumerate(dispositivos):
+    i += 1
+    ttk.Label(dispositivos_frame, text=dispositivo['nombre']).grid(row=i, column=0)
+    ttk.Label(dispositivos_frame, text=dispositivo['ip']).grid(row=i, column=1)
+    ttk.Label(dispositivos_frame, text=dispositivo['tipo']).grid(row=i, column=2)
+    ttk.Button(dispositivos_frame, text="+").grid(row=i, column=4)
 
 root.mainloop()
 

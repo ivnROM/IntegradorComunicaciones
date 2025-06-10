@@ -40,9 +40,9 @@ def asignar_rootwin(w: Tk):
 
 
 # crud
-def c_api():
-    requests.post(url=API_URL, json=)
-    return 
+def c_api(dispositivo_body):
+    code = requests.post(url=API_URL, json=dispositivo_body)
+    return code
 
 def r_api():
     return 
@@ -100,8 +100,20 @@ def nuevo_dispositivo():
     ttk.Label(details_frame, text="Ruta Backup").grid(row=8, column=0, pady=2, sticky="w")
     ttk.Entry(details_frame, textvariable=b_path_var).grid(row=8, column=1, pady=2, sticky="ew")
 
+    def enviar_y_cerrar():
+        dispositivo = Dispositivo(nombre_var.get(), ip_var.get(), tipo_var.get(), usuario_var.get(), contrasena_var.get(), puerto_var.get(), b_periodo_var.get(), b_hora_var.get(), b_dia_var.get(), b_mes_var.get(), b_path_var.get())
+        try:
+            response = c_api(dispositivo.to_dict())
+            if response.status_code == 200 or response.status_code == 201:
+                print("Dispositivo agregado")
+            else:
+                print(f"Error agregando dispositivo: {response.status_code} - {response.text}")
+        except Exception as e:
+            print(f"Error de conexión: {e}")
+        w.destroy()
+
     # crear la clase en base a lo ingresado
-    nuevobtn = ttk.Button(w, text="Agregar", command=c_api)
+    ttk.Button(w, text="Agregar", command=enviar_y_cerrar).pack()
     return
     
 def editar_dispositivo():

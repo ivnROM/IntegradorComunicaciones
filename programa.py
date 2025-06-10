@@ -4,6 +4,7 @@ from tkinter import ttk
 API_URL = "http://127.0.0.1:8000/dispositivos/"
 
 global rootwin
+global dispositivos
 
 class Dispositivo:
     def __init__( self, nombre: str, ip: str, tipo: str, usuario: str, contrasena: str, puerto: int, b_periodo: int | None = None, b_hora: str | None = None, b_dia: str | None = None, b_mes: int | None = None, b_path: str | None = None):
@@ -125,6 +126,8 @@ def nuevo_dispositivo():
                 print(f"Error agregando dispositivo: {response.status_code} - {response.text}")
         except Exception as e:
             print(f"Error de conexión: {e}")
+
+        cargar_dispositivos()
         w.destroy()
 
     # crear la clase en base a lo ingresado
@@ -190,17 +193,19 @@ editarbtn.pack(side='left')
 eliminarbtn.pack(side='left')
 backupbtn.pack(side='left')
 
-print(API_URL)
-dispositivos = r_api()
-for i, dispositivo in enumerate(dispositivos):
-    i += 1
-    ttk.Label(dispositivos_frame, text=dispositivo['nombre']).grid(row=i, column=0)
-    ttk.Label(dispositivos_frame, text=dispositivo['ip']).grid(row=i, column=1)
-    ttk.Label(dispositivos_frame, text=dispositivo['tipo']).grid(row=i, column=2)
-    ttk.Button(dispositivos_frame, text="+").grid(row=i, column=4)
+def cargar_dispositivos():
+    global dispositivos
+    dispositivos = r_api()
+    for i, dispositivo in enumerate(dispositivos):
+        i += 1
+        ttk.Label(dispositivos_frame, text=dispositivo['nombre']).grid(row=i, column=0)
+        ttk.Label(dispositivos_frame, text=dispositivo['ip']).grid(row=i, column=1)
+        ttk.Label(dispositivos_frame, text=dispositivo['tipo']).grid(row=i, column=2)
+        ttk.Button(dispositivos_frame, text="+").grid(row=i, column=4)
+
+cargar_dispositivos()
 
 root.mainloop()
-
 
 # Ejemlpo de post
 #disp = Dispositivo("Router1", "192.168.0.1", "router", "admin", "1234", 22)

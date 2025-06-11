@@ -3,6 +3,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 
+from widgets import calendarwidget
+
 API_URL = "http://127.0.0.1:8000/dispositivos/"
 
 global rootwin
@@ -107,6 +109,7 @@ def nuevo_dispositivo():
     ttk.Label(details_frame, text="Hora").grid(row=5, column=0, pady=2, sticky="w")
     ttk.Entry(details_frame, textvariable=b_hora_var).grid(row=5, column=1, pady=2, sticky="ew")
     ttk.Label(details_frame, text="Día").grid(row=6, column=0, pady=2, sticky="w")
+    ttk.Spinbox(details_frame, from_=1, to=28, textvariable=b_dia_var).grid(row=6, column=0, pady=2, sticky="w")
     ttk.Combobox(details_frame, textvariable=b_dia_var, values=["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]).grid(row=6, column=1, pady=2, sticky="ew")
     ttk.Label(details_frame, text="Mes").grid(row=7, column=0, pady=2, sticky="w")
     ttk.Spinbox(details_frame, from_=1, to=12, textvariable=b_mes_var).grid(row=7, column=1, pady=2, sticky="ew")

@@ -62,6 +62,7 @@ def u_api():
 def d_api():
     return 
 
+# ventana que abre la creación de un dispositivo
 def nuevo_dispositivo():
     global rootwin
     w = Toplevel(rootwin)
@@ -146,9 +147,89 @@ def nuevo_dispositivo():
     ttk.Button(w, text="Agregar", command=enviar_y_cerrar).grid()
     return
     
-def editar_dispositivo():
+# ventana que abre la edición del dispositivo actualmente seleccionado
+def editar_dispositivo(dispositivo):
     global rootwin
     w = Toplevel(rootwin)
+    # Variables
+    nombre_var = StringVar()
+    ip_var = StringVar()
+    tipo_var = StringVar()
+    usuario_var = StringVar()
+    contrasena_var = StringVar()
+    puerto_var = IntVar()
+    b_periodo_var = StringVar()
+    b_hora_var = StringVar()
+    b_dia_var = StringVar()
+    b_mes_var = IntVar()
+    b_path_var = StringVar()
+
+    main_frame = ttk.LabelFrame(w, text="Lista de dispositivos")
+    details_frame = ttk.LabelFrame(w, text="Detalles del dispositivo")
+    main_frame.grid()
+    details_frame.grid()
+
+    def seleccionar_directorio():
+        ruta = filedialog.askdirectory()
+        if ruta:
+            b_path_var.set(ruta)
+            ttk.Entry(details_frame, textvariable=b_path_var, state='readonly', width=50).grid(row=8, column=1)
+
+    # ------- datos principales -------
+    ttk.Label(main_frame, text="Nombre").grid(row=0, column=0, padx=5)
+    ttk.Entry(main_frame, textvariable=nombre_var).grid(row=0, column=1, padx=5)
+    ttk.Label(main_frame, text="IP").grid(row=1, column=0, padx=5)
+    ttk.Entry(main_frame, textvariable=ip_var).grid(row=1, column=1, padx=5)
+    ttk.Label(main_frame, text="Tipo").grid(row=0, column=2, padx=5)
+    ttk.Combobox(main_frame, textvariable=tipo_var, values=["router", "switch", "pc"]).grid(row=0, column=3, padx=5)
+    # ------- detalles -------
+    ttk.Label(details_frame, text="Usuario").grid(row=0, column=0, pady=5, sticky="w")
+    ttk.Entry(details_frame, textvariable=usuario_var).grid(row=0, column=1, pady=5, sticky="ew")
+    ttk.Label(details_frame, text="Contraseña").grid(row=1, column=0, pady=5, sticky="w")
+    ttk.Entry(details_frame, textvariable=contrasena_var, show="*").grid(row=1, column=1, pady=5, sticky="ew")
+    ttk.Label(details_frame, text="Puerto").grid(row=2, column=0, pady=5, sticky="w")
+    ttk.Entry(details_frame, textvariable=puerto_var).grid(row=2, column=1, pady=5, sticky="ew")
+    ttk.Label(details_frame, text="Configuración de Backup").grid(row=3, column=0, columnspan=2, pady=(10,5), sticky="w")
+    ttk.Label(details_frame, text="Periodo").grid(row=4, column=0, pady=2, sticky="w")
+    ttk.Combobox(details_frame, textvariable=b_periodo_var, values=["Diario", "Semanal", "Mensual"]).grid(row=4, column=1, pady=2, sticky="ew")
+    ttk.Label(details_frame, text="Hora").grid(row=5, column=0, pady=2, sticky="w")
+    ttk.Entry(details_frame, textvariable=b_hora_var).grid(row=5, column=1, pady=2, sticky="ew")
+    ttk.Label(details_frame, text="Día").grid(row=6, column=0, pady=2, sticky="w")
+    ttk.Spinbox(details_frame, from_=1, to=28, textvariable=b_dia_var).grid(row=6, column=0, pady=2, sticky="w")
+    ttk.Combobox(details_frame, textvariable=b_dia_var, values=["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]).grid(row=6, column=1, pady=2, sticky="ew")
+    ttk.Label(details_frame, text="Mes").grid(row=7, column=0, pady=2, sticky="w")
+    ttk.Spinbox(details_frame, from_=1, to=12, textvariable=b_mes_var).grid(row=7, column=1, pady=2, sticky="ew")
+    ttk.Label(details_frame, text="Ruta Backup").grid(row=8, column=0, pady=2, sticky="w")
+    ttk.Button(details_frame, text="Elegir directorio", command=seleccionar_directorio).grid(row=8, column=0)
+    ttk.Entry(details_frame, textvariable=b_path_var, state='readonly', width=50).grid(row=8, column=1)
+    
+    def enviar_y_cerrar():
+        print(b_periodo_var.get())
+        match (b_periodo_var.get()):
+            case "Diario":
+                b_periodo_int = 1
+            case "Semanal":
+                b_periodo_int = 2
+            case "Mensual":
+                b_periodo_int = 3
+            case _:
+                exit("No deberia pasar esto nunca")
+
+        dispositivo = Dispositivo(nombre_var.get(), ip_var.get(), tipo_var.get(), usuario_var.get(), contrasena_var.get(), puerto_var.get(), b_periodo_int, b_hora_var.get(), b_dia_var.get(), b_mes_var.get(), b_path_var.get())
+        try:
+            response = c_api(dispositivo.to_dict())
+            if response.status_code == 200 or response.status_code == 201:
+                print("Dispositivo agregado")
+            else:
+                print(f"Error agregando dispositivo: {response.status_code} - {response.text}")
+        except Exception as e:
+            print(f"Error de conexión: {e}")
+
+        cargar_dispositivos()
+        w.destroy()
+
+    # crear la clase en base a lo ingresado
+    ttk.Button(w, text="Agregar", command=enviar_y_cerrar).grid()
     return
 
 def eliminar_dispositivo():
@@ -234,11 +315,6 @@ def seleccionar_dispositivo(i):
     ttk.Label(detalles_frame, text="Dia: " + dispositivo['b_dia']).grid(row=5, column=0, pady=5, sticky="w")
     ttk.Label(detalles_frame, text="Ruta: " + dispositivo['b_path']).grid(row=6, column=0, pady=5, sticky="w")
     return
-
-
-    
-    
-
 
 def cargar_dispositivos():
     global dispositivos

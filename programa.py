@@ -1,6 +1,8 @@
 import requests
 from tkinter import *
 from tkinter import ttk
+from tkinter import filedialog
+
 API_URL = "http://127.0.0.1:8000/dispositivos/"
 
 global rootwin
@@ -76,8 +78,14 @@ def nuevo_dispositivo():
 
     main_frame = ttk.LabelFrame(w, text="Lista de dispositivos")
     details_frame = ttk.LabelFrame(w, text="Detalles del dispositivo")
-    main_frame.pack()
-    details_frame.pack()
+    main_frame.grid()
+    details_frame.grid()
+
+    def seleccionar_directorio():
+        ruta = filedialog.askdirectory()
+        if ruta:
+            b_path_var.set(ruta)
+            ttk.Entry(details_frame, textvariable=b_path_var, state='readonly', width=50).grid(row=8, column=1)
 
     # ------- datos principales -------
     ttk.Label(main_frame, text="Nombre").grid(row=0, column=0, padx=5)
@@ -103,8 +111,9 @@ def nuevo_dispositivo():
     ttk.Label(details_frame, text="Mes").grid(row=7, column=0, pady=2, sticky="w")
     ttk.Spinbox(details_frame, from_=1, to=12, textvariable=b_mes_var).grid(row=7, column=1, pady=2, sticky="ew")
     ttk.Label(details_frame, text="Ruta Backup").grid(row=8, column=0, pady=2, sticky="w")
-    ttk.Entry(details_frame, textvariable=b_path_var).grid(row=8, column=1, pady=2, sticky="ew")
-
+    ttk.Button(details_frame, text="Elegir directorio", command=seleccionar_directorio).grid(row=8, column=0)
+    ttk.Entry(details_frame, textvariable=b_path_var, state='readonly', width=50).grid(row=8, column=1)
+    
     def enviar_y_cerrar():
         print(b_periodo_var.get())
         match (b_periodo_var.get()):
@@ -131,7 +140,7 @@ def nuevo_dispositivo():
         w.destroy()
 
     # crear la clase en base a lo ingresado
-    ttk.Button(w, text="Agregar", command=enviar_y_cerrar).pack()
+    ttk.Button(w, text="Agregar", command=enviar_y_cerrar).grid()
     return
     
 def editar_dispositivo():
@@ -164,10 +173,12 @@ style.configure("TFrame")
 opciones_frame = ttk.Frame(root)
 dispositivos_frame = ttk.LabelFrame(root, text="Lista de dispositivos")
 detalles_frame = ttk.LabelFrame(root, text="Detalles del dispositivo")
+detalles_frame_info = ttk.Frame(root)
 
-opciones_frame.pack()
-dispositivos_frame.pack()
-detalles_frame.pack()
+opciones_frame.grid(row=0)
+dispositivos_frame.grid(row=1)
+detalles_frame.grid(row=2)
+detalles_frame_info.grid(row=2, column=1)
 
 # botones
 nuevobtn = ttk.Button(opciones_frame, text="Nuevo", command=nuevo_dispositivo)
@@ -181,27 +192,62 @@ ttk.Label(dispositivos_frame, text="IP").grid(row=0, column=1, padx=5)
 ttk.Label(dispositivos_frame, text="Tipo").grid(row=0, column=2, padx=5)
 
 
-ttk.Label(detalles_frame, text="Nombre").grid(row=0, column=0, pady=5, sticky="w")
-ttk.Label(detalles_frame, text="IP").grid(row=1, column=0, pady=5, sticky="w")
-ttk.Label(detalles_frame, text="Tipo").grid(row=2, column=0, pady=5, sticky="w")
-ttk.Label(detalles_frame, text="Contraseña").grid(row=3, column=0, pady=5, sticky="w")
-ttk.Label(detalles_frame, text="Contraseña").grid(row=4, column=0, pady=5, sticky="w")
-ttk.Label(detalles_frame, text="Configuración de Backup").grid(row=5, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Usuario: ").grid(row=0, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Contraseña: ").grid(row=1, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Puerto: ").grid(row=2, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Periodo: ").grid(row=3, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Mes: ").grid(row=4, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Dia: ").grid(row=5, column=0, pady=5, sticky="w")
+ttk.Label(detalles_frame, text="Ruta: ").grid(row=6, column=0, pady=5, sticky="w")
 
-nuevobtn.pack(side='left')
-editarbtn.pack(side='left')
-eliminarbtn.pack(side='left')
-backupbtn.pack(side='left')
+nuevobtn.grid(column=0, row=0)
+editarbtn.grid(column=1, row=0)
+eliminarbtn.grid(column=2, row=0)
+backupbtn.grid(column=3, row=0)
+
+def seleccionar_dispositivo(i):
+    global dispositivos
+    dispositivo = dispositivos[i]
+
+    for widget in detalles_frame.winfo_children():
+        widget.destroy()
+
+    periodo = ""
+    match (dispositivo['b_periodo']):
+        case 1:
+            periodo = "Diario"
+        case 2:
+            periodo = "Semanal"
+        case 3:
+            periodo = "Mensual"
+        case _:
+            exit("No deberia pasar esto nunca")
+
+    ttk.Label(detalles_frame, text="Usuario: " + dispositivo['usuario']).grid(row=0, column=0, pady=5, sticky="w")
+    ttk.Label(detalles_frame, text="Contraseña: " + dispositivo['contrasena']).grid(row=1, column=0, pady=5, sticky="w")
+    ttk.Label(detalles_frame, text="Puerto: " + str(dispositivo['puerto'])).grid(row=2, column=0, pady=5, sticky="w")
+    ttk.Label(detalles_frame, text="Periodo: " + periodo).grid(row=3, column=0, pady=5, sticky="w")
+    ttk.Label(detalles_frame, text="Mes: " + str(dispositivo['b_mes'])).grid(row=4, column=0, pady=5, sticky="w")
+    ttk.Label(detalles_frame, text="Dia: " + dispositivo['b_dia']).grid(row=5, column=0, pady=5, sticky="w")
+    ttk.Label(detalles_frame, text="Ruta: " + dispositivo['b_path']).grid(row=6, column=0, pady=5, sticky="w")
+    return
+
+
+    
+    
+
 
 def cargar_dispositivos():
     global dispositivos
+
     dispositivos = r_api()
+
     for i, dispositivo in enumerate(dispositivos):
         i += 1
         ttk.Label(dispositivos_frame, text=dispositivo['nombre']).grid(row=i, column=0)
         ttk.Label(dispositivos_frame, text=dispositivo['ip']).grid(row=i, column=1)
         ttk.Label(dispositivos_frame, text=dispositivo['tipo']).grid(row=i, column=2)
-        ttk.Button(dispositivos_frame, text="+").grid(row=i, column=4)
+        ttk.Button(dispositivos_frame, text="+", command=lambda idx=i-1: seleccionar_dispositivo(idx - 1)).grid(row=i, column=4)
 
 cargar_dispositivos()
 

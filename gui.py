@@ -13,7 +13,7 @@ API_URL = "http://127.0.0.1:8000"
 # Configuración Inicial
 ctk.set_appearance_mode("dark")
 root = ctk.CTk()  # reemplaza Tk()
-root.geometry("300x400")
+root.geometry("400x400")
 root.title("Gestor de Backups")
 
 # Mapeo de días de la semana

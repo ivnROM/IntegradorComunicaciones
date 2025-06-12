@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from contador import iniciar_contador
+#from contador import iniciar_contador
 from models import *
 from crud import *
 
 app = FastAPI()
-iniciar_contador()
+#iniciar_contador()
 
 # C - Crear dispositivo
 @app.post("/dispositivos/", response_model=DispositivoOut)

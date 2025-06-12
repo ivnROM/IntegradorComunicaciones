@@ -23,7 +23,6 @@ class Dispositivo(Base):
     b_periodo = Column(String, nullable=True)     # "diario", "semanal", "mensual"
     b_hora = Column(String, nullable=True)        # Ej: "08:00"
     b_dia = Column(Integer, nullable=True)        # 0=lunes ... 6=domingo
-    b_mes = Column(Integer, nullable=True)        # Ej: 1 (enero)
     b_path = Column(String, nullable=False)        # Ruta donde guardar backup
 
 Base.metadata.create_all(bind=engine)
@@ -39,7 +38,6 @@ class DispositivoCreate(BaseModel):
     b_periodo: str
     b_hora: str | None
     b_dia: int | None
-    b_mes: int | None
     b_path: str | None
 
 class DispositivoUpdate(BaseModel):
@@ -52,7 +50,6 @@ class DispositivoUpdate(BaseModel):
     b_periodo: str | None
     b_hora: str | None
     b_dia: int | None
-    b_mes: int | None
     b_path: str | None
 
 # Pydantic de salida

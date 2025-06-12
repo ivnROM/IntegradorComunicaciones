@@ -1,6 +1,8 @@
-import requests
 from tkinter import filedialog
 from datetime import datetime
+from backup import generar_backup_manual
+
+import requests
 import customtkinter as ctk
 import socket
 import threading
@@ -308,6 +310,18 @@ def cargar_dispositivos(frame_dispositivos):
             command=lambda d=dispositivo, lbl=estado_label: actualizar_estado_dispositivo(frame, d, lbl)
         )
         test_btn.pack(side="right", padx=2)
+
+        # Botón backup manual
+        backup_btn = ctk.CTkButton(
+            buttons_frame,
+            text="💾",
+            width=30,
+            height=30,
+            command=lambda d=dispositivo: threading.Thread(
+                target=generar_backup_manual, args=(d,), daemon=True
+            ).start()
+        )
+        backup_btn.pack(side="right", padx=2)
         
         # Botón de edición
         edit_btn = ctk.CTkButton(

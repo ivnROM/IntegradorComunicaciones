@@ -2,6 +2,7 @@ import telnetlib
 import os
 
 def generar_backup_manual(dispositivo):
+    # VER SSH
     try:
         # Conexión Telnet
         tn = telnetlib.Telnet(dispositivo["ip"], int(dispositivo["puerto"]), timeout=5)

@@ -146,11 +146,6 @@ def actualizar_info_ultimo_backup(frame_ultimo_backup):
         tamaño_label = ctk.CTkLabel(info_frame, 
                                   text=f"📏 Tamaño: {tamaño}")
         tamaño_label.pack(anchor="w", padx=5, pady=2)
-        
-        # Ruta completa (opcional, para debug)
-        # ruta_label = ctk.CTkLabel(info_frame, 
-        #                          text=f"📂 Ruta: {ultimo_backup.get('ruta_completa', 'N/A')}")
-        # ruta_label.pack(anchor="w", padx=5, pady=2)
             
     else:
         # No hay información de backup
@@ -650,6 +645,6 @@ def auto_refresh():
 cargar_dispositivos(frame_dispositivos)
 actualizar_info_ultimo_backup(frame_ultimo_backup)
 
-# auto_refresh()  #
+# auto_refresh()  # Descomentar para que refresque automaticamente
 
 root.mainloop()

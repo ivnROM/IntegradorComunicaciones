@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Dispositivo, DispositivoCreate  # asumimos que los modelos están separados
+from models import Dispositivo, DispositivoCreate  
 
 # Crear un dispositivo nuevo
 def crear_dispositivo(db: Session, dispositivo_data: DispositivoCreate) -> Dispositivo:

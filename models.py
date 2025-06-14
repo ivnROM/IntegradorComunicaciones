@@ -52,7 +52,7 @@ class DispositivoUpdate(BaseModel):
     b_dia: int | None
     b_path: str | None
 
-# Pydantic de salida
+# 
 class DispositivoOut(DispositivoCreate):
     id: int
 

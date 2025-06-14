@@ -368,14 +368,3 @@ def start_backup_service(db_session_func, check_interval=60):
     return scheduler
 
 
-# Ejemplo de uso
-if __name__ == "__main__":
-    # Para uso independiente, necesitarías importar tu función get_db
-    # from models import get_db
-    # scheduler = start_backup_service(get_db)
-    
-    print("Para usar este módulo, impórtalo en tu API de FastAPI")
-    print("Ejemplo:")
-    print("from backup_scheduler import start_backup_service")
-    print("from models import get_db")
-    print("scheduler = start_backup_service(get_db)")

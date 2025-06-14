@@ -1,0 +1,9 @@
+2025-06-14 01:21:08,438 - backup_scheduler - INFO - Iniciando verificaciones cada 60 segundos
+2025-06-14 01:21:08,438 - backup_scheduler - INFO - Servicio de backups automáticos iniciado
+2025-06-14 01:21:08,438 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 01:21:51,754 - backup_scheduler - INFO - Iniciando verificaciones cada 60 segundos
+2025-06-14 01:21:51,754 - backup_scheduler - INFO - Servicio de backups automáticos iniciado
+2025-06-14 01:21:51,754 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 01:28:58,331 - backup_scheduler - INFO - Iniciando verificaciones cada 60 segundos
+2025-06-14 01:28:58,331 - backup_scheduler - INFO - Servicio de backups automáticos iniciado
+2025-06-14 01:28:58,331 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'

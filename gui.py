@@ -29,8 +29,8 @@ DIAS_SEMANA = {
 
 def test_conectividad(ip, puerto, timeout=3):
     """
-    Testa la conectividad a un dispositivo usando telnet
-    Returns: True si está conectado, False si no
+    Testa la conectividad a un dispositivo con un socket
+    Devuelve True si está conectado, False si no
     """
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from backup_scheduler import start_backup_service
 
 #from contador import iniciar_contador
 from models import *
@@ -44,3 +45,14 @@ def borrar_dispositivo_endpoint(dispositivo_id: int, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")
     return {"detail": "Dispositivo borrado correctamente"}
 
+# Al final del archivo, agregar esto:
+@app.on_event("startup")
+async def startup_event():
+    """Inicia el servicio de backups automáticos cuando arranca la API"""
+    scheduler = start_backup_service(get_db, check_interval=60)  # Verifica cada 60 segundos
+    print("✅ Servicio de backups automáticos iniciado")
+
+# Endpoint para verificar el estado del scheduler
+@app.get("/backup/status")
+def backup_status():
+    return {"status": "Servicio de backups automáticos activo", "timestamp": datetime.now()}

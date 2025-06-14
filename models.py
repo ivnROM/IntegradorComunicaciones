@@ -52,7 +52,6 @@ class DispositivoUpdate(BaseModel):
     b_dia: int | None
     b_path: str | None
 
-# 
 class DispositivoOut(DispositivoCreate):
     id: int
 

@@ -28,13 +28,13 @@ def db():
 
 @pytest.fixture
 def temp_backup_dir():
-    """Fixture que crea un directorio temporal para backups"""
+    """Esto crea un directorio temporal para backups"""
     with tempfile.TemporaryDirectory() as temp_dir:
         yield temp_dir
 
 @pytest.fixture
 def mock_db_session():
-    """Mock de función get_db para los tests del scheduler"""
+    """ Clon de función get_db para los tests del scheduler"""
     def get_db_mock():
         db = TestingSessionLocal()
         Base.metadata.create_all(bind=engine)
@@ -143,7 +143,7 @@ def test_should_backup_daily_sin_backup_previo(temp_backup_dir):
     
     scheduler = BackupScheduler(None)
     
-    # Mock datetime para simular que es las 15:00 (después de la hora programada)
+    # Datetime para simular que es las 15:00 (después de la hora programada)
     with patch('backup_scheduler.datetime') as mock_datetime:
         mock_now = datetime(2024, 1, 15, 15, 30, 0)  # 15:30
         mock_datetime.now.return_value = mock_now
@@ -165,9 +165,9 @@ def test_should_backup_weekly(temp_backup_dir):
     
     scheduler = BackupScheduler(None)
     
-    # Mock datetime para simular que es lunes a las 15:00
+    # Datetime para simular que es lunes a las 15:00
     with patch('backup_scheduler.datetime') as mock_datetime:
-        # Lunes = weekday() 0
+
         mock_now = datetime(2024, 1, 15, 15, 0, 0)  # Un lunes
         mock_datetime.now.return_value = mock_now
         mock_datetime.fromtimestamp = datetime.fromtimestamp
@@ -182,13 +182,13 @@ def test_should_backup_monthly(temp_backup_dir):
         'ip': '192.168.1.1',
         'b_periodo': 'mensual',
         'b_hora': '14:00',
-        'b_dia': '15',  # Día 15 del mes
+        'b_dia': '15',  # Test mensual un dia 15
         'b_path': temp_backup_dir
     }
     
     scheduler = BackupScheduler(None)
     
-    # Mock datetime para simular que es día 15 a las 15:00
+    # Datetime para simular que es día 15 a las 15:00
     with patch('backup_scheduler.datetime') as mock_datetime:
         mock_now = datetime(2024, 1, 15, 15, 0, 0)  # Día 15
         mock_datetime.now.return_value = mock_now

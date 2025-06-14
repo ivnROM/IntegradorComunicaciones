@@ -45,7 +45,6 @@ def borrar_dispositivo_endpoint(dispositivo_id: int, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")
     return {"detail": "Dispositivo borrado correctamente"}
 
-# Al final del archivo, agregar esto:
 @app.on_event("startup")
 async def startup_event():
     """Inicia el servicio de backups automáticos cuando arranca la API"""

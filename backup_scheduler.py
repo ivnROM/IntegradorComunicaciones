@@ -1,9 +1,3 @@
-"""
-Módulo de Backups Automáticos
-Este módulo se encarga de verificar y ejecutar backups automáticos según la configuración
-de cada dispositivo (diario, semanal, mensual).
-"""
-
 import os
 import time
 import threading
@@ -27,7 +21,7 @@ class BackupScheduler:
         """
         Inicializa el programador de backups
         
-        Args:
+        Argumentos:
             db_session_func: Función que retorna una sesión de base de datos
             check_interval (int): Intervalo en segundos para verificar backups (default: 60)
         """
@@ -101,7 +95,6 @@ class BackupScheduler:
             
             db = self.get_db()
             try:
-                # Importar aquí para evitar dependencias circulares
                 from crud import listar_dispositivos
                 dispositivos = listar_dispositivos(db)
                 
@@ -135,7 +128,7 @@ class BackupScheduler:
         """
         Determina si un dispositivo necesita backup basado en su configuración
         
-        Args:
+        Argumentos:
             dispositivo (dict): Datos del dispositivo
             
         Returns:
@@ -358,10 +351,6 @@ class BackupScheduler:
 def start_backup_service(db_session_func, check_interval=60):
     """
     Inicia el servicio de backups automáticos
-    
-    Args:
-        db_session_func: Función que retorna una sesión de base de datos
-        check_interval (int): Intervalo de verificación en segundos
     """
     scheduler = BackupScheduler(db_session_func, check_interval)
     scheduler.start()

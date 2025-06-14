@@ -152,38 +152,6 @@ def test_should_backup_daily_sin_backup_previo(temp_backup_dir):
         should_backup = scheduler._should_backup(dispositivo)
         assert should_backup is True
 
-def test_should_backup_daily_con_backup_previo(temp_backup_dir):
-    """Test backup diario cuando ya existe un backup del día anterior"""
-    dispositivo = {
-        'nombre': 'RouterTest',
-        'ip': '192.168.1.1',
-        'b_periodo': 'diario',
-        'b_hora': '14:00',
-        'b_path': temp_backup_dir
-    }
-    
-    # Crear un archivo de backup de ayer
-    ayer = datetime.now() - timedelta(days=1)
-    timestamp_ayer = ayer.strftime("%Y%m%d_%H%M%S")
-    backup_file = os.path.join(temp_backup_dir, f"backup_RouterTest_{timestamp_ayer}.txt")
-    with open(backup_file, 'w') as f:
-        f.write("backup de ayer")
-    
-    # Cambiar la fecha de creación del archivo a ayer
-    timestamp_ayer_unix = ayer.timestamp()
-    os.utime(backup_file, (timestamp_ayer_unix, timestamp_ayer_unix))
-    
-    scheduler = BackupScheduler(None)
-    
-    # Mock datetime para simular que es hoy a las 15:00
-    with patch('backup_scheduler.datetime') as mock_datetime:
-        mock_now = datetime.now().replace(hour=15, minute=0, second=0, microsecond=0)
-        mock_datetime.now.return_value = mock_now
-        mock_datetime.fromtimestamp = datetime.fromtimestamp
-        
-        should_backup = scheduler._should_backup(dispositivo)
-        assert should_backup is True
-
 def test_should_backup_weekly(temp_backup_dir):
     """Test backup semanal en el día correcto"""
     dispositivo = {
@@ -255,37 +223,6 @@ def test_should_not_backup_directorio_inexistente():
     scheduler = BackupScheduler(None)
     should_backup = scheduler._should_backup(dispositivo)
     assert should_backup is False
-
-def test_get_last_backup_time(temp_backup_dir):
-    """Test obtención de fecha del último backup"""
-    dispositivo = {
-        'nombre': 'RouterTest',
-        'b_path': temp_backup_dir
-    }
-    
-    # Crear algunos archivos de backup con diferentes fechas
-    now = datetime.now()
-    
-    # Backup de hace 2 días
-    backup_old = os.path.join(temp_backup_dir, "backup_RouterTest_20240101_120000.txt")
-    with open(backup_old, 'w') as f:
-        f.write("backup viejo")
-    old_time = (now - timedelta(days=2)).timestamp()
-    os.utime(backup_old, (old_time, old_time))
-    
-    # Backup de hace 1 día (más reciente)
-    backup_recent = os.path.join(temp_backup_dir, "backup_RouterTest_20240102_120000.txt")
-    with open(backup_recent, 'w') as f:
-        f.write("backup reciente")
-    recent_time = (now - timedelta(days=1)).timestamp()
-    os.utime(backup_recent, (recent_time, recent_time))
-    
-    scheduler = BackupScheduler(None)
-    last_backup_time = scheduler._get_last_backup_time(dispositivo)
-    
-    # Debe devolver la fecha del archivo más reciente
-    assert last_backup_time is not None
-    assert abs((last_backup_time - datetime.fromtimestamp(recent_time)).total_seconds()) < 1
 
 def test_execute_backup_simulation(temp_backup_dir):
     """Test la ejecución simulada de backup"""

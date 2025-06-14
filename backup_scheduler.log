@@ -7,3 +7,20 @@
 2025-06-14 01:28:58,331 - backup_scheduler - INFO - Iniciando verificaciones cada 60 segundos
 2025-06-14 01:28:58,331 - backup_scheduler - INFO - Servicio de backups automáticos iniciado
 2025-06-14 01:28:58,331 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:15:33,638 - backup_scheduler - INFO - Iniciando verificaciones cada 60 segundos
+2025-06-14 05:15:33,638 - backup_scheduler - INFO - Servicio de backups automáticos iniciado
+2025-06-14 05:15:33,638 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:16:33,639 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:17:33,639 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:18:33,639 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:19:33,639 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:20:33,640 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:21:33,640 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:22:33,640 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:23:33,640 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:24:33,641 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:25:33,641 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:26:33,641 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:27:33,641 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:28:33,641 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'
+2025-06-14 05:29:33,642 - backup_scheduler - ERROR - Error obteniendo dispositivos desde la BD: 'generator' object has no attribute 'query'

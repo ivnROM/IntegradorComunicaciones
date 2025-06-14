@@ -1,19 +1,20 @@
 from tkinter import filedialog
 from datetime import datetime
 from backup import generar_backup_manual
-
 import requests
 import customtkinter as ctk
 import socket
 import threading
 import time
+import os
+import glob
 
 API_URL = "http://127.0.0.1:8000"
 
 # Configuración Inicial
 ctk.set_appearance_mode("dark")
 root = ctk.CTk()  # reemplaza Tk()
-root.geometry("400x400")
+root.geometry("400x550")  # Aumentado para el nuevo frame
 root.title("Gestor de Backups")
 
 # Mapeo de días de la semana
@@ -26,6 +27,145 @@ DIAS_SEMANA = {
     "Sábado": "6",
     "Domingo": "7"
 }
+
+def obtener_ultimo_backup():
+    """
+    Obtiene información del último backup realizado buscando en los directorios de backup
+    """
+    try:
+        # Obtener dispositivos para saber sus rutas de backup
+        respuesta = requests.get(f"{API_URL}/dispositivos/")
+        if respuesta.status_code != 200:
+            return None
+            
+        dispositivos = respuesta.json()
+        if not dispositivos:
+            return None
+        
+        ultimo_backup = None
+        ultimo_timestamp = 0
+        
+        for dispositivo in dispositivos:
+            backup_path = dispositivo.get('b_path')
+            nombre_dispositivo = dispositivo.get('nombre', '')
+            
+            if backup_path and os.path.exists(backup_path):
+                # Buscar archivos que empiecen con el nombre del dispositivo
+                patron = os.path.join(backup_path, f"{nombre_dispositivo}_backup_*.rsc")
+                archivos = glob.glob(patron)
+                
+                for archivo in archivos:
+                    try:
+                        # Obtener timestamp del archivo
+                        timestamp_archivo = os.path.getmtime(archivo)
+                        
+                        if timestamp_archivo > ultimo_timestamp:
+                            ultimo_timestamp = timestamp_archivo
+                            tamaño = os.path.getsize(archivo)
+                            tamaño_formateado = f"{tamaño / 1024:.2f} KB" if tamaño < 1024*1024 else f"{tamaño / (1024*1024):.2f} MB"
+                            
+                            ultimo_backup = {
+                                'dispositivo': nombre_dispositivo,
+                                'timestamp': datetime.fromtimestamp(timestamp_archivo).isoformat(),
+                                'archivo': os.path.basename(archivo),
+                                'ruta_completa': archivo,
+                                'tamaño': tamaño_formateado,
+                                'estado': 'exitoso' if os.path.exists(archivo) else 'error'
+                            }
+                    except Exception as e:
+                        print(f"Error al procesar archivo {archivo}: {e}")
+                        continue
+        
+        return ultimo_backup
+        
+    except Exception as e:
+        print(f"Error al obtener último backup: {e}")
+        return None
+
+def actualizar_info_ultimo_backup(frame_ultimo_backup):
+    """
+    Actualiza la información del último backup en el frame
+    """
+    # Limpiar frame anterior
+    for widget in frame_ultimo_backup.winfo_children():
+        widget.destroy()
+    
+    # Título del frame
+    titulo_label = ctk.CTkLabel(frame_ultimo_backup, 
+                               text="📋 Último Backup Realizado", 
+                               font=ctk.CTkFont(size=14, weight="bold"))
+    titulo_label.pack(pady=(10, 5))
+    
+    # Obtener datos del último backup
+    ultimo_backup = obtener_ultimo_backup()
+    
+    if ultimo_backup:
+        # Frame contenedor para la info
+        info_frame = ctk.CTkFrame(frame_ultimo_backup, fg_color="transparent")
+        info_frame.pack(fill="x", padx=10, pady=5)
+        
+        # Dispositivo
+        dispositivo_label = ctk.CTkLabel(info_frame, 
+                                       text=f"🖥️ Dispositivo: {ultimo_backup.get('dispositivo', 'N/A')}")
+        dispositivo_label.pack(anchor="w", padx=5, pady=2)
+        
+        # Fecha y hora
+        timestamp = ultimo_backup.get('timestamp', 'N/A')
+        if timestamp != 'N/A':
+            try:
+                # Convertir timestamp a formato legible
+                dt = datetime.fromisoformat(timestamp)
+                fecha_formateada = dt.strftime("%d/%m/%Y - %H:%M:%S")
+            except:
+                fecha_formateada = timestamp
+        else:
+            fecha_formateada = 'N/A'
+            
+        fecha_label = ctk.CTkLabel(info_frame, 
+                                 text=f"🕐 Fecha/Hora: {fecha_formateada}")
+        fecha_label.pack(anchor="w", padx=5, pady=2)
+        
+        # Estado del backup
+        estado = ultimo_backup.get('estado', 'N/A')
+        estado_color = "#22c55e" if estado == "exitoso" else "#ef4444" if estado == "error" else "#f59e0b"
+        estado_icon = "✅" if estado == "exitoso" else "❌" if estado == "error" else "⚠️"
+        
+        estado_label = ctk.CTkLabel(info_frame, 
+                                  text=f"{estado_icon} Estado: {estado.title()}", 
+                                  text_color=estado_color)
+        estado_label.pack(anchor="w", padx=5, pady=2)
+        
+        # Archivo de backup
+        archivo = ultimo_backup.get('archivo', 'N/A')
+        archivo_label = ctk.CTkLabel(info_frame, 
+                                   text=f"📁 Archivo: {archivo}")
+        archivo_label.pack(anchor="w", padx=5, pady=2)
+        
+        # Tamaño del archivo
+        tamaño = ultimo_backup.get('tamaño', 'N/A')
+        tamaño_label = ctk.CTkLabel(info_frame, 
+                                  text=f"📏 Tamaño: {tamaño}")
+        tamaño_label.pack(anchor="w", padx=5, pady=2)
+        
+        # Ruta completa (opcional, para debug)
+        # ruta_label = ctk.CTkLabel(info_frame, 
+        #                          text=f"📂 Ruta: {ultimo_backup.get('ruta_completa', 'N/A')}")
+        # ruta_label.pack(anchor="w", padx=5, pady=2)
+            
+    else:
+        # No hay información de backup
+        no_backup_label = ctk.CTkLabel(frame_ultimo_backup, 
+                                     text="❌ No hay backups disponibles",
+                                     text_color="#ef4444")
+        no_backup_label.pack(pady=10)
+    
+    # Timestamp de actualización
+    ahora = datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
+    actualizado_label = ctk.CTkLabel(frame_ultimo_backup, 
+                                   text=f"🔄 Actualizado: {ahora}",
+                                   font=ctk.CTkFont(size=10),
+                                   text_color="#6b7280")
+    actualizado_label.pack(pady=(5, 10))
 
 def test_conectividad(ip, puerto, timeout=3):
     """
@@ -71,6 +211,18 @@ def actualizar_estado_dispositivo(frame, dispositivo, label_estado):
     # Ejecutar en hilo separado para no bloquear la UI
     threading.Thread(target=_actualizar, daemon=True).start()
 
+def generar_backup_manual_wrapper(dispositivo, frame_ultimo_backup):
+    """
+    Wrapper para generar backup manual y actualizar la info del último backup
+    """
+    def _generar():
+        generar_backup_manual(dispositivo)
+        # Actualizar info del último backup después del backup
+        time.sleep(2)  # Esperar un poco para que se procese el backup
+        root.after(0, lambda: actualizar_info_ultimo_backup(frame_ultimo_backup))
+    
+    threading.Thread(target=_generar, daemon=True).start()
+
 def abrir_modal_dispositivo(parent, refresh_callback, dispositivo=None):
     es_edicion = dispositivo is not None
     top = ctk.CTkToplevel(parent)
@@ -110,7 +262,6 @@ def abrir_modal_dispositivo(parent, refresh_callback, dispositivo=None):
             path_entry.delete(0, ctk.END)
             path_entry.insert(0, path)
     
-
     def guardar():
         try:
             # Validar campos obligatorios
@@ -270,7 +421,6 @@ def abrir_modal_dispositivo(parent, refresh_callback, dispositivo=None):
                 f"Ocurrió un error inesperado:\n{str(e)}\n\nVerificá los datos ingresados y la conexión."
             )
 
-
     def eliminar():
         try:
             # Confirmar eliminación
@@ -372,17 +522,31 @@ def abrir_modal_dispositivo(parent, refresh_callback, dispositivo=None):
 # MainWindow
 label_frame_dispositivos = ctk.CTkLabel(root, text="Dispositivos", font=ctk.CTkFont(size=14, weight="bold"))
 frame_dispositivos = ctk.CTkFrame(root, width=150, corner_radius=0)
-button_agregar_dispositivos = ctk.CTkButton(root, text="Agregar dispositivo", command=lambda: abrir_modal_dispositivo(root, lambda: cargar_dispositivos(frame_dispositivos)))
+button_agregar_dispositivos = ctk.CTkButton(root, text="Agregar dispositivo", 
+                                          command=lambda: abrir_modal_dispositivo(root, lambda: cargar_dispositivos(frame_dispositivos)))
 
 # Botón para refrescar estados
 button_refresh = ctk.CTkButton(root, text="🔄 Refrescar Estados", 
                               command=lambda: cargar_dispositivos(frame_dispositivos),
                               width=120, height=28)
 
+# Frame de último backup (abajo)
+frame_ultimo_backup = ctk.CTkFrame(root, corner_radius=10)
+
+# Botón para actualizar info del último backup
+button_refresh_backup = ctk.CTkButton(root, text="🔄 Actualizar Info Backup", 
+                                    command=lambda: actualizar_info_ultimo_backup(frame_ultimo_backup),
+                                    width=140, height=28)
+
+# Posicionamiento de widgets
 label_frame_dispositivos.pack(pady=10)
 frame_dispositivos.pack(pady=10)
 button_agregar_dispositivos.pack(pady=5)
 button_refresh.pack(pady=5)
+
+# Frame y botón de último backup al final
+frame_ultimo_backup.pack(pady=10, padx=10, fill="x")
+button_refresh_backup.pack(pady=5)
 
 def cargar_dispositivos(frame_dispositivos):
     # Limpiar contenido anterior del frame
@@ -432,16 +596,14 @@ def cargar_dispositivos(frame_dispositivos):
             command=lambda d=dispositivo, lbl=estado_label: actualizar_estado_dispositivo(frame, d, lbl)
         )
         test_btn.pack(side="right", padx=2)
-
-        # Botón backup manual
+        
+        # Botón backup manual - modificado para actualizar info del último backup
         backup_btn = ctk.CTkButton(
             buttons_frame,
             text="💾",
             width=30,
             height=30,
-            command=lambda d=dispositivo: threading.Thread(
-                target=generar_backup_manual, args=(d,), daemon=True
-            ).start()
+            command=lambda d=dispositivo: generar_backup_manual_wrapper(d, frame_ultimo_backup)
         )
         backup_btn.pack(side="right", padx=2)
         
@@ -476,12 +638,18 @@ def auto_refresh():
             try:
                 # Ejecutar en el hilo principal
                 root.after(0, lambda: cargar_dispositivos(frame_dispositivos))
+                # También actualizar info del último backup
+                root.after(0, lambda: actualizar_info_ultimo_backup(frame_ultimo_backup))
             except:
                 break  # Si la ventana se cerró, salir del loop
     
     # Ejecutar en hilo separado
     threading.Thread(target=_refresh, daemon=True).start()
 
+# Cargar datos iniciales
 cargar_dispositivos(frame_dispositivos)
-# auto_refresh()  # Descomenta si querés refresh automático cada 30 segundos
+actualizar_info_ultimo_backup(frame_ultimo_backup)
+
+# auto_refresh()  #
+
 root.mainloop()

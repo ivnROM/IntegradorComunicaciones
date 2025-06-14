@@ -6,15 +6,10 @@ import os
 def generar_backup_manual(dispositivo):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    # VER SSH
+    # SSH
     try:
-        # Conexión Telnet
-        print(dispositivo["ip"])
-        print(dispositivo["usuario"])
-        print(dispositivo["contrasena"])
         ssh.connect(hostname=dispositivo["ip"], username=dispositivo["usuario"], password=dispositivo["contrasena"], look_for_keys=False, allow_agent=False, timeout=10)
-        print("Se pudo ingresar")
-        stdin, stdout, stderr = ssh.exec_command("export")
+        _, stdout, _ = ssh.exec_command("export")
         contents =stdout.read().decode()
 
 

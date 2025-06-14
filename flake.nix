@@ -13,6 +13,7 @@
           customtkinter 
           fastapi
           requests
+          paramiko
           pydantic
           pytest
           sqlalchemy
